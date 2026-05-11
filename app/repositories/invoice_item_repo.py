@@ -1,4 +1,4 @@
-]import logging
+import logging
 from uuid import uuid4
 from typing import Optional
 import asyncpg
