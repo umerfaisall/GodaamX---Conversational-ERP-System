@@ -33,7 +33,7 @@ api_router.include_router(
 api_router.include_router(poi.router, prefix="/poi", tags=["Purchase-Order-Items"])
 api_router.include_router(user.router, prefix="/users", tags=["Users"])
 api_router.include_router(
-    invoice_items.router, prefix="/invoice-items", tags=["Invoice Items"]
+    invoice_items.router, prefix="/invoice", tags=["Invoice Items"]
 )
 api_router.include_router(customers.router, prefix="/customers", tags=["Customers"])
 api_router.include_router(shipments.router, prefix="/shipments", tags=["Shipments"])

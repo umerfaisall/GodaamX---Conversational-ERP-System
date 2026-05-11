@@ -1,4 +1,4 @@
-import logging
+]import logging
 from uuid import uuid4
 from typing import Optional
 import asyncpg
@@ -116,21 +116,15 @@ async def get_invoice_item(
 
 async def list_invoice_items(
     conn: asyncpg.Connection,
-    invoice_id: Optional[str] = None,
-    offset: int = 0,
-    limit: int = 100,
+    invoice_id: str,
     user_id: Optional[str] = None,
 ) -> list[InvoiceItemRead]:
     try:
-        query = _SELECT + " WHERE ii.deleted = FALSE"
-        params: list = [limit, offset]
-        if invoice_id:
-            query += " AND ii.invoice_id = $3"
-            params.append(invoice_id)
+        query = _SELECT + " WHERE ii.invoice_id = $1 AND ii.deleted = FALSE"
+        params = [invoice_id]
         if user_id:
-            query += f" AND ii.user_id = ${len(params) + 1}"
+            query += " AND ii.user_id = $2"
             params.append(user_id)
-        query += " ORDER BY ii.created_at LIMIT $1 OFFSET $2"
         rows = await conn.fetch(query, *params)
         return [_build(r) for r in rows]
     except asyncpg.PostgresError as e:

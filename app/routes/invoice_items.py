@@ -1,4 +1,5 @@
-from typing import Annotated, Optional
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, status
 import asyncpg
 
@@ -13,34 +14,30 @@ Conn = Annotated[asyncpg.Connection, Depends(get_connection)]
 CurrentUser = Annotated[dict, Depends(get_current_user)]
 
 
-@router.post("/", response_model=InvoiceItemRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/{invoice_id}/items", response_model=InvoiceItemRead, status_code=status.HTTP_201_CREATED
+)
 async def create_invoice_item(
     body: InvoiceItemCreate, conn: Conn, current_user: CurrentUser
 ):
     return await invoice_item_controller.create_invoice_item(conn, body, current_user)
 
 
-@router.get("/", response_model=list[InvoiceItemRead])
-async def list_invoice_items(
-    conn: Conn,
-    current_user: CurrentUser,
-    invoice_id: Optional[str] = None,
-    offset: int = 0,
-    limit: int = 100,
-):
+@router.get("/{invoice_id}/items", response_model=list[InvoiceItemRead])
+async def list_invoice_items(invoice_id: str, conn: Conn, current_user: CurrentUser):
     return await invoice_item_controller.list_invoice_items(
-        conn, invoice_id, offset, limit, current_user=current_user
+        conn, invoice_id, current_user=current_user
     )
 
 
-@router.get("/{invoice_item_id}", response_model=InvoiceItemRead)
+@router.get("/{invoice_id}/items/{invoice_item_id}", response_model=InvoiceItemRead)
 async def get_invoice_item(invoice_item_id: str, conn: Conn, current_user: CurrentUser):
     return await invoice_item_controller.get_invoice_item(
         conn, invoice_item_id, current_user=current_user
     )
 
 
-@router.put("/{invoice_item_id}", response_model=InvoiceItemRead)
+@router.put("/{invoice_id}/items/{invoice_item_id}", response_model=InvoiceItemRead)
 async def update_invoice_item(
     invoice_item_id: str, body: InvoiceItemUpdate, conn: Conn, current_user: CurrentUser
 ):
@@ -49,7 +46,7 @@ async def update_invoice_item(
     )
 
 
-@router.delete("/{invoice_item_id}", status_code=200)
+@router.delete("/{invoice_id}/items/{invoice_item_id}", status_code=200)
 async def delete_invoice_item(
     invoice_item_id: str, conn: Conn, current_user: CurrentUser
 ) -> dict:

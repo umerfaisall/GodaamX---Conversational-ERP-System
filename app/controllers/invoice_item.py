@@ -56,15 +56,11 @@ async def get_invoice_item(
 
 
 async def list_invoice_items(
-    conn: asyncpg.Connection,
-    invoice_id: str,
-    offset: int,
-    limit: int,
-    current_user: dict,
+    conn: asyncpg.Connection, invoice_id: str, current_user: dict
 ) -> list[InvoiceItemRead]:
     try:
         return await invoice_item_repo.list_invoice_items(
-            conn, invoice_id, offset, limit, user_id=_get_current_user(current_user)
+            conn, invoice_id, user_id=_get_current_user(current_user)
         )
     except RuntimeError as e:
         logger.error(
