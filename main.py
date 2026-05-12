@@ -34,7 +34,7 @@ app = FastAPI(
 # ── CORS — allow your frontend origin(s) to reach the API ────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://godaamx.vercel.app/"],
+    allow_origins=["http://localhost:3000","https://godaamx.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
