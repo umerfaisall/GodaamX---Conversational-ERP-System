@@ -1,94 +1,127 @@
-# 🚀 Warehouse ERP API
+# GodaamX
 
-Welcome to the backend for the Warehouse Inventory and Logistic ERP System. 
+> Inventory & Logistics ERP System — a modern warehouse management backend with AI-powered data assistant.
 
-This project is built fully asynchronously using **FastAPI** and **asyncpg**, connecting directly to a **Neon PostgreSQL Database**. 
-
---- | sh`
-
-**Installation:**
-Clone the repository and install dependencies:
-```bash
-git clone <repository_url>
-cd "Warehouse ERp"
-
-# This will automatically create a `.venv` and install everything from pyproject.toml
-uv sync
-```
+![Status](https://img.shields.io/badge/status-active-success.svg)
+![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.132+-009688.svg)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791.svg)
+![asyncpg](https://img.shields.io/badge/asyncpg-raw_SQL-purple.svg)
+![LangChain](https://img.shields.io/badge/LangChain-AI_Agent-green.svg)
+![Groq](https://img.shields.io/badge/Groq-Llama_3.3_70B-orange.svg)
+![JWT](https://img.shields.io/badge/Auth-JWT_+_bcrypt-red.svg)
+![Pydantic](https://img.shields.io/badge/Pydantic-v2-e92063.svg)
 
 ---
 
-## 🔑 2. Environment Variables (`.env`)
-Before running the app, you MUST create a `.env` file in the root directory. **Do not commit this file to git.**
+## What It Does
 
-Create `.env` and paste the following, replacing the Neon URL with the real one from our team dashboard:
+GodaamX is a multi-tenant ERP backend for managing warehouses, inventory, suppliers, purchase orders, invoices, shipments, and customers. It features role-based access control (SUPERADMIN / SUPPLIER), real-time dashboard analytics, report generation with CSV export, and an AI chat assistant that lets users query their ERP data using natural language.
 
+---
 
-## 💻 3. Running Locally (Development)
-The fastest way to test code changes is to run the app directly on your machine. The server will auto-reload every time you save a python file.
+## Key Features
+
+- **Suppliers, Products, Categories, Warehouses** — full CRUD with soft deletes
+- **Inventory Tracking** — per-product, per-warehouse stock with reorder alerts
+- **Purchase Orders & Invoices** — status workflows with nested line items
+- **Shipment Management** — carrier tracking (DHL, FedEx, UPS, Aramex) with auto-generated tracking numbers
+- **Customer Management** — Individual and Business customer types
+- **Dashboard Analytics** — role-specific KPI cards and chart data
+- **Reports & CSV Export** — summary reports across all entities
+- **AI Chat Assistant** — natural-language SQL queries via LangChain + Groq with automatic data scoping
+- **Registration Workflow** — supplier self-registration with admin approval and email notifications
+- **JWT Auth** — Bearer token authentication with role-based access control
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | FastAPI |
+| Runtime | Python 3.12+ |
+| Database | PostgreSQL (Neon serverless) |
+| DB Driver | asyncpg (raw SQL, no ORM) |
+| AI Agent | LangChain |
+| LLM | Groq (Llama 3.3 70B) |
+| Auth | JWT + bcrypt |
+| Validation | Pydantic v2 |
+| Package Manager | uv |
+| Formatter | Black |
+
+---
+
+## Quick Start
 
 ```bash
-# Activate the virtual environment if not already activated
-# Windows: .venv\Scripts\activate
-# Mac/Linux: source .venv/bin/activate
+# Clone & install
+git clone https://github.com/umerfaisall/Inventory-and-logistic-ERP-System.git
+cd Inventory-and-logistic-ERP-System
+uv sync
+
+# Set up environment
+cp .env.example .env
+# Edit .env with your DATABASE_URL, GROQ_API_KEY, SMTP credentials
+
+# Run database migrations
+psql $DATABASE_URL -f Database/database_Code.sql
+psql $DATABASE_URL -f Database/chat_conversations.sql
 
 # Start the server
 python main.py
 ```
-> **Note:** We use a wrapper in `main.py` that automatically launches `uvicorn app.main:app --reload`.
 
-### Testing the Endpoints:
-Once running, open your browser and go to:
-👉 **http://127.0.0.1:8000/docs**
-
-This opens the interactive Swagger UI where you can test all the Supplier and Bank Details endpoints directly.
+API docs available at **http://localhost:8000/docs**
 
 ---
 
-## 🐳 4. Running with Docker
-If you want to test the production build or don't want to install Python locally, you can run the app via Docker.
+## Environment Variables
 
-**Build the image:**
-```bash
-docker build -t warehouse-erp .
-```
-
-**Run the container:**
-*(Note: It reads your `.env` file automatically to inject the Neon credentials)*
-```bash
-docker run --env-file .env -p 8000:8000 warehouse-erp
-```
-The API docs will be available at http://localhost:8000/docs
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `SECRET_KEY` | No | JWT signing secret (change in production) |
+| `GROQ_API_KEY` | No | Required for AI chat feature |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` | No | SMTP config for email notifications |
 
 ---
 
-## 📂 5. Architecture & File Structure
-We use a standard layered architecture to keep routing isolated from database logic.
+## Project Structure
 
 ```
-app/
-├── main.py              # App definition & lifespan events (pool startup)
-├── database.py          # asyncpg connection pool configuration
-├── config.py            # Pydantic settings loading from .env
-├── api/
-│   └── v1/
-│       ├── api.py       # Central router registration
-│       └── endpoints/   # FastAPI Route definitions (Controllers)
-├── dto/                 # Data Transfer Objects (Pydantic Models)
-└── repositories/        # Database Access Layer (Raw SQL queries via asyncpg)
+├── main.py                # App entry point, CORS, middleware
+├── pyproject.toml         # Dependencies
+├── Database/              # SQL schema & migrations
+└── app/
+    ├── routes/            # API route definitions
+    ├── controllers/       # Business logic
+    ├── repositories/      # Raw SQL data access
+    ├── dto/               # Pydantic request/response models
+    ├── langchain_agent/   # AI chat agent (LangChain + Groq)
+    └── utils/             # Auth, email, CSV export, tracking numbers
 ```
 
-### 🧠 Important Development Rules:
-1. **Never use ORMs like SQLAlchemy here**. We use raw SQL queries via `asyncpg` within the `repositories/` folder for maximum performance.
-2. **Handle Neon Idle Timeouts**. Neon serverless DBs go to sleep after inactivity. Our `database.py` connection pool handles this, but be aware that the *first* request of the day might take 2-3 seconds as the DB wakes up.
-3. **DTO Separation**. Keep `Supplier` and `SupplierBankDetails` Pydantic models in their respective files inside the `app/dto/` folder to avoid circular imports.
+---
 
+## Architecture
 
-## 🏗️ 1. Project Setup
-This project uses [uv](https://docs.astral.sh/uv/) as the package manager instead of basic pip for lightning-fast dependency resolution.
+```
+Routes → Controllers → Repositories → PostgreSQL
+```
 
-**Prerequisites:**
-1. Install Python 3.12+
-2. Install `uv`: 
-   - Windows: `powershell -c "irm https://astral.sh/uv/install.ps1 | iex"`
-   - Mac/Linux: `curl -LsSf https://astral.sh/uv/install.sh
+Fully async. No ORM — raw SQL via asyncpg. Soft deletes everywhere. Role-based query injection for data scoping.
+
+---
+
+## API Endpoints
+
+All routes under `/api/v1`:
+
+`/auth` · `/admin` · `/users` · `/suppliers` · `/categories` · `/warehouses` · `/products` · `/inventory` · `/purchase-order` · `/poi` · `/invoice` · `/customers` · `/shipments` · `/dashboard` · `/reports` · `/chat`
+
+---
+
+## License
+
+Not yet specified.
