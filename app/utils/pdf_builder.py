@@ -8,14 +8,16 @@ using fpdf2. Supports both SuperAdmin and Supplier dashboard layouts.
 from __future__ import annotations
 
 import io
+import os
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from fpdf import FPDF
 
 # ── Font configuration ───────────────────────────────────────────────
 _FONT = "Arial"  # Windows system Unicode font
-_FONT_DIR = "C:/Windows/Fonts"
+_FONT_DIR = Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts"
 
 
 # ── Colour palette ──────────────────────────────────────────────────
@@ -161,10 +163,10 @@ def build_dashboard_pdf(dashboard_data: dict[str, Any]) -> bytes:
         The raw PDF bytes ready to be sent as a response.
     """
     pdf = _ReportPDF(orientation="L", format="A4")
-    pdf.add_font(_FONT, fname=f"{_FONT_DIR}/arial.ttf")
-    pdf.add_font(_FONT, style="B", fname=f"{_FONT_DIR}/arialbd.ttf")
-    pdf.add_font(_FONT, style="I", fname=f"{_FONT_DIR}/ARIALI.TTF")
-    pdf.add_font(_FONT, style="BI", fname=f"{_FONT_DIR}/ARIALBI.TTF")
+    pdf.add_font(_FONT, fname=str(_FONT_DIR / "arial.ttf"))
+    pdf.add_font(_FONT, style="B", fname=str(_FONT_DIR / "arialbd.ttf"))
+    pdf.add_font(_FONT, style="I", fname=str(_FONT_DIR / "ARIALI.TTF"))
+    pdf.add_font(_FONT, style="BI", fname=str(_FONT_DIR / "ARIALBI.TTF"))
     pdf.alias_nb_pages()
     pdf.set_auto_page_break(auto=True, margin=20)
     pdf.add_page()
