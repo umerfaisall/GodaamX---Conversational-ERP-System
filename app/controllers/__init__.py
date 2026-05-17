@@ -15,6 +15,7 @@ from app.controllers import (
     warehouse,
     dashboard,
     reports,
+    report_download,
 )
 
 __all__ = [
@@ -34,4 +35,5 @@ __all__ = [
     "warehouse",
     "dashboard",
     "reports",
+    "report_download",
 ]
