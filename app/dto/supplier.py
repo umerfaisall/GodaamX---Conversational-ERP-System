@@ -2,8 +2,8 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
-
 # Supplier DTOs
+
 
 class SupplierCreate(BaseModel):
     supplier_name: str
@@ -23,6 +23,7 @@ class SupplierUpdate(BaseModel):
 
 class SupplierRead(BaseModel):
     supplier_id: str
+    user_id: str
     supplier_name: str
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None

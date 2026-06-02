@@ -2,13 +2,15 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel
 
+
 class UserCreate(BaseModel):
     name: str
     email: str
     password: str
     phone_number: Optional[str] = None
     role: str = "SUPPLIER"
-    
+
+
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
@@ -16,7 +18,7 @@ class UserUpdate(BaseModel):
     phone_number: Optional[str] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None
-    
+
 
 class UserRead(BaseModel):
     user_id: str

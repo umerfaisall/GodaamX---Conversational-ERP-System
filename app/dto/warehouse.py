@@ -9,7 +9,6 @@ class WarehouseCreate(BaseModel):
     city: Optional[str] = None
     capacity: Optional[int] = None
     phone: Optional[str] = None
-    manager_id: Optional[str] = None
     is_active: bool = True
 
 
@@ -19,18 +18,17 @@ class WarehouseUpdate(BaseModel):
     city: Optional[str] = None
     capacity: Optional[int] = None
     phone: Optional[str] = None
-    manager_id: Optional[str] = None
     is_active: Optional[bool] = None
 
 
 class WarehouseRead(BaseModel):
     warehouse_id: str
+    user_id: str
     warehouse_name: str
     location: Optional[str] = None
     city: Optional[str] = None
     capacity: Optional[int] = None
     phone: Optional[str] = None
-    manager_id: Optional[str] = None
     is_active: bool
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
